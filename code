@@ -1,0 +1,55 @@
+import cv2
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras.preprocessing.image import img_to_array
+from google.colab.patches import cv2_imshow 
+from IPython.display import display, clear_output
+from PIL import Image
+
+# Load your pre-trained model here
+model = tf.keras.models.load_model('/content/meat3_model.h5')  # Load your model using your preferred method
+
+# Load video
+cap = cv2.VideoCapture("/content/istockphoto-1459379750-640_adpp_is.mp4")  # Replace with your video file path
+
+meat_fresh = False  # Initialize the flag
+
+while cap.isOpened():
+    ret, frame = cap.read()
+    if not ret:
+        break
+    
+    # Resize frame to match model's input size
+    resized_frame = cv2.resize(frame, (256, 256))
+    
+    # Preprocess the frame for your model (e.g., normalize pixel values)
+    preprocessed = img_to_array(resized_frame)  # Preprocess the frame using your model's requirements
+    preprocessed_frame = np.expand_dims(preprocessed , axis=0)
+    
+    # Perform inference using your model
+    predictions = model.predict(preprocessed_frame)
+    
+    # Assuming predictions are in the format [apple_probability, non_apple_probability]
+    meat_probability = predictions[0][0]
+    
+    if meat_probability > 0.5:  # Adjust the probability threshold as needed
+        if predictions[0][1] > predictions[0][0]:
+            meat_fresh = True
+        else:
+            meat_fresh = False
+    
+    # Display the frame
+    clear_output(wait=True)
+    display(Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)))  # Convert BGR to RGB
+    
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
+
+# Print final statement after the video processing
+if meat_fresh:
+    print("The meat is fresh.")
+else:
+    print("The meat is not fresh.")
