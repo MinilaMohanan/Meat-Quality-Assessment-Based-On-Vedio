@@ -12,3 +12,4 @@ The successful implementation of this meat quality assessment system showcases i
 
 Keywords: Meat Quality Assessment, Convolutional Neural Networks, Computer Vision, Deep Learning, Video Processing, Real-time Monitoring.
 
+https://www.linkedin.com/in/minila-k-m-0b7199263/recent-activity/all/
